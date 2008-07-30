@@ -87,7 +87,7 @@ class  tx_magentobackend_module1 extends t3lib_SCbase {
 						$url = trim($tmp_confArr['url']);
 						if ($url!='') {
 							$this->content.= '
-								<iframe src="'.$url.'" width="98%" height="98%" name="MagentoFrame">
+								<iframe src="'.$url.'admin/" width="98%" height="98%" name="MagentoFrame">
 								  <p>Sorry your browser is not able to display iframes</p>
 								</iframe>
 							';

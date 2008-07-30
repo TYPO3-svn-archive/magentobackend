@@ -233,7 +233,7 @@ class  tx_magentoconnect_module1 extends t3lib_SCbase {
 			  function connect() {
 					  // TODO: check url/username/password
 				  if(!$this->client) {
-					  $this->client = new SoapClient($this->connect['url']);
+					  $this->client = new SoapClient($this->connect['url'] . '/api/soap/?wsdl');
 					  $this->sessionId = $this->client->login($this->connect['username'], $this->connect['password']);
 				  }
 				  if(!$this->client) {

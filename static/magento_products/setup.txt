@@ -1,0 +1,12 @@
+# /***************************
+#  *    Default TS for
+#  *  EXT magento / magentoproducts
+#  *   
+#  * 
+#  ***************************/  
+
+plugin.tx_magentoconnect_pi1 {
+	templateFile = EXT:magento/res/template.html
+	productWithImages = 1
+	
+}

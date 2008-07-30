@@ -1,3 +1,8 @@
 # cat=basic; type=text; label=Url to your Shop: Enter the url of yor shop (FE)
 url = http://www.example.org/admin
 
+# cat=basic;type=text; label=Username: Username to be able to connect to your Magento. Be sure that this user exists in Magento and got some roles.
+username = 
+
+# cat=basic;type=text; label=Password: Password for the given username.
+password = 
