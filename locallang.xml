@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for extension 'magentoconnect'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="pi1_title">Magento Connect</label>
+			<label index="pi1_plus_wiz_description">Connect to your Magento Store to display all kind of information</label>
+			
+			<label index="flexform.sheets.general.title">General</label>			
+			<label index="flexform.sheets.general.mode">What to display</label>
+			<label index="flexform.sheets.general.mode.0">Single Product</label>
+			<label index="flexform.sheets.general.mode.1">Product List</label>
+			<label index="flexform.sheets.general.mode.2">Product Images</label>
+			<label index="flexform.sheets.general.sku">SKU</label>
+			<label index="flexform.sheets.general.where">Where (value)</label>
+			<label index="flexform.sheets.general.whereField">Where (field)</label>
+			
+			
+			<label index="flexform.sheets.more.title">Advanced</label>			
+			<label index="flexform.sheets.more.template">Template</label>
+		</languageKey>
+	</data>
+</T3locallang>
