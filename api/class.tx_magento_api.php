@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008 Georg Ringer <http://www.ringer.it/>
+*  (c) 2008 Steffen Kamper, Georg Ringer <>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,10 +25,51 @@
 /**
  * API to include Magento
  *
- * @author	Georg Ringer <http://www.ringer.it/>
+ * @author	Steffen Kamper, Georg Ringer <>
  */
-class tx_magentoconnect_api {
+class tx_magento_api {
+	protected $url;
+	protected $user;
+	protected $password;
+	protected $client = NULL;
+	protected $sessionId;
+	
+	 /**
+	 * class constructor
+	 * connects to magento
+	 *
+	 * @param	string		$url: url of magento soap
+	 * @param	string		$user: username for login
+	 * @param	string		$password: password for login
+	 */	
+	public function __construct($url, $user, $password) {
+		$this->url = $url;
+		$this->user = $user;
+		$this->password = $password;
+		//connect to magento
+		$this->client = new SoapClient($this->url);
+		$this->sessionId = $this->client->login($this->user, $this->password);
 
+		if(!$this->client) {
+			die('No connection possible, check your params:<br /><br />
+				Url: ' . $this->connect['url'] . '<br />
+				username: ' . $this->connect['username'] . '<br />
+				password: ' . $this->connect['password'] . '');
+			}
+	}
+	
+	 /**
+	 * Get a single product by its SKU
+	 *
+	 * @param	string		$sku: sku of the product
+	 * @param	boolean		$getImages: Load images at the same time
+	 * @return	product
+	 */	
+	private function call($command, $id) {
+		return $this->client->call($this->sessionId, $command, $id);
+	}
+	
+	
 	/**
 	 * Get a single product by its SKU
 	 *
@@ -36,24 +77,22 @@ class tx_magentoconnect_api {
 	 * @param	boolean		$getImages: Load images at the same time
 	 * @return	product
 	 */	
-	function getSingleProduct($sku, $getImages=0) {
+	public function getSingleProduct($sku, $getImages = false) {
 		$sku = trim($sku);
 		
 		// if a sku is available
 		if ($sku!='') {
-			$singleProduct = $this->client->call($this->sessionId, 'product.info', $sku);				
+			$singleProduct = $this->call('product.info', $sku);				
 			
 			// load the images of an product too, to get everything in 1 array
-			if (count($singleProduct) > 0 && $getImages==1) {				
-				$singleProduct['images'] = $this->client->call($this->sessionId, 'product_media.list', $sku);
+			if (count($singleProduct) && $getImages) {				
+				$singleProduct['images'] = $this->call('product_media.list', $sku);
 			}
 			
 			return $singleProduct;
 		} else {
-			$content = 'No SKU!';
+			return 'No SKU!';
 		}
-
-		return $content;
 	}
 
 	/**
@@ -63,23 +102,20 @@ class tx_magentoconnect_api {
 	 * @param	string		$whereField: Field to compare
 	 * @return	Array productlist
 	 */	
-	function getProducts($where, $whereField) {
+	public function getProducts($where, $whereField) {
 		$whereField = $whereField ? $whereField : 'sku';
 		
-		if ($where!='') {
+		if ($where != '') {
 			$filters = array(
-				$whereField => array('like'=> $where)
+				$whereField => array(
+					'like'=> $where
+				)
 			);
 			
-			$products = $this->client->call($this->sessionId, 'product.list', array($filters));				
-			
-			return $products;
-			
+			return $this->call('product.list', array($filters));				
 		} else {
-			$content = 'No Where clause!';
+			return 'No Where clause!';
 		}
-		
-		return $content;
 	}
 
 	/**
@@ -88,10 +124,8 @@ class tx_magentoconnect_api {
 	 * @param	string		$sku: sku of the product
 	 * @return	product
 	 */
-	function getProductImage($sku) {
-		$productImage = $this->client->call($this->sessionId, 'product_media.list', $sku);
-		
-		return $productImage;
+	public function getProductImage($sku) {
+		return $this->call('product_media.list', $sku);
 	}
 
 	/**
@@ -100,49 +134,25 @@ class tx_magentoconnect_api {
 	 * @param	string		$id: id of the category
 	 * @return	product
 	 */
-	function getCategory($id) {
-	
-		$content = $this->client->call($this->sessionId, 'catalog_category.info', intval($id));
-		
-		return $content;
+	public function getCategory($id) {
+		return $this->call('catalog_category.info', intval($id));
 	}	
 		
-	/**
-	 * Open the SOAP call
-	 *
-	 * @return void
-	 */	
-	function open() {
-		$this->client = new SoapClient($this->connect['url']);
-		$this->sessionId = $this->client->login($this->connect['username'], $this->connect['password']);
-	}
-
+	
 	/**
 	 * Close the SOAP call
 	 *
 	 * @return void
 	 */
-	function close() {
-			$this->client->endSession($session);
+	public function close() {
+		$this->client->endSession($session);
 	}
 	
-	/**
-	 * Get the connection
-	 *
-	 * @return void
-	 */
-	function getConnection($url, $username, $password) {
-		$this->connect['username'] = $username;
-		$this->connect['url'] = $url;
-		$this->connect['password'] = $password;
-	}
-
-
 
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/magentoconnect/class.tx_magentoconnect_api.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/magentoconnect/class.tx_magentoconnect_api.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/magento/api/class.tx_magento_api.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/magento/api/class.tx_magento_api.php']);
 }
 
 ?>

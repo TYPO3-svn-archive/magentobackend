@@ -26,16 +26,16 @@ require_once(PATH_tslib.'class.tslib_pibase.php');
 
 
 /**
- * Plugin 'Magento Connect' for the 'magentoconnect' extension.
+ * Plugin 'Magento Connect' for the 'magento' extension.
  *
  * @author	 <>
  * @package	TYPO3
- * @subpackage	tx_magentoconnect
+ * @subpackage	tx_magento
  */
-class tx_magentoconnect_pi1 extends tslib_pibase {
-	var $prefixId      = 'tx_magentoconnect_pi1';		// Same as class name
-	var $scriptRelPath = 'pi1/class.tx_magentoconnect_pi1.php';	// Path to this script relative to the extension dir.
-	var $extKey        = 'magentoconnect';	// The extension key.
+class tx_magentoproducts extends tslib_pibase {
+	var $prefixId      = 'tx_magento_products';		// Same as class name
+	var $scriptRelPath = 'feplugins/magentoproducts/class.tx_magentoproducts.php';	// Path to this script relative to the extension dir.
+	var $extKey        = 'magento';	// The extension key.
 	var $pi_checkCHash = true;
 	
 	/**
@@ -61,13 +61,13 @@ class tx_magentoconnect_pi1 extends tslib_pibase {
 			switch ($this->config['mode']) {
 				case 'SINGLEPRODUCT':	
 					$result = $this->magento->getSingleProduct($this->config['sku'], $this->conf['productWithImages']);
-    			break;
+				break;
 				case 'PRODUCTS':	
 					$result = $this->magento->getProducts($this->config['where'], $this->config['whereField']);
-    			break;
+				break;
 				case 'PRODUCTIMAGE':	
 					$result = $this->magento->getProductImage($this->config['sku']);
-    			break;
+				break;
 			}
 			
 			if (is_array($result)) {
@@ -90,13 +90,13 @@ class tx_magentoconnect_pi1 extends tslib_pibase {
 		$template['total'] = $this->cObj->getSubpart($this->templateCode,'###TEMPLATE_'.$this->config['mode'].'###');		
 		
 		foreach ($row as $key=>$value) {
-  		$markerArray['###'.strtoupper($key).'###'] = $this->cObj->stdWrap($value, $this->conf[strtolower($his->config['mode']).'.'][$key]);
-  	}
-  	
-  	if (is_array($row['categories'])) {
+		$markerArray['###'.strtoupper($key).'###'] = $this->cObj->stdWrap($value, $this->conf[strtolower($his->config['mode']).'.'][$key]);
+	}
+	
+	if (is_array($row['categories'])) {
 			$markerArray['###CATEGORIES###'] = $this->getCategories($row['categories']);
 		}
-  	
+	
 
 	
 		$content.= $this->cObj->substituteMarkerArrayCached($template['total'], $markerArray, $subpartArray);
@@ -113,14 +113,14 @@ class tx_magentoconnect_pi1 extends tslib_pibase {
 		foreach ($cats as $key=>$catId) {
 
 			$category = $this->magento->getCategory($catId);		
-				  	
+					
 			foreach ($category as $key=>$value) {
-	  		$markerArray['###'.strtoupper($key).'###'] = $this->cObj->stdWrap($value, $this->conf['category.'][$key]);
-	  	}
+			$markerArray['###'.strtoupper($key).'###'] = $this->cObj->stdWrap($value, $this->conf['category.'][$key]);
+		}
 			$content_item .= $this->cObj->substituteMarkerArrayCached($template['item'], $markerArray);
-  	}
-  	
-  		// put everything into the template
+	}
+	
+		// put everything into the template
 		$subpartArray['###CONTENT###'] = $content_item;
 
 		
@@ -136,7 +136,7 @@ class tx_magentoconnect_pi1 extends tslib_pibase {
 	 * @return	boolean If there is any connection available
 	 */	
 	function checkConfiguration() {
-		$config = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['magentoconnect']);		
+		$config = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['magento']);		
 		
 		if ($config['username']!='' && $config['password']!='' && $config['url']!='')	{
 			$this->magento->getConnection($config['url'], $config['username'], $config['password']);	
@@ -170,10 +170,10 @@ class tx_magentoconnect_pi1 extends tslib_pibase {
 		$this->templateCode = $this->cObj->fileResource($conf['templateFile']);
 
 			// CSS file
-		$GLOBALS['TSFE']->additionalHeaderData['magentoconnect'] = (isset($this->conf['pathToCSS'])) ? '<link rel="stylesheet" href="'.$GLOBALS['TSFE']->tmpl->getFileName($this->conf['pathToCSS']).'" type="text/css" />' : '';
+		$GLOBALS['TSFE']->additionalHeaderData['magento'] = (isset($this->conf['pathToCSS'])) ? '<link rel="stylesheet" href="'.$GLOBALS['TSFE']->tmpl->getFileName($this->conf['pathToCSS']).'" type="text/css" />' : '';
 		
-		require_once( t3lib_extMgm::extPath('magentoconnect').'/class.tx_magentoconnect_api.php');
-		$this->magento = t3lib_div::makeInstance('tx_magentoconnect_api');
+		require_once( t3lib_extMgm::extPath('magento').'/class.tx_magento_api.php');
+		$this->magento = t3lib_div::makeInstance('tx_magento_api');
 
 	}	
 	
@@ -207,8 +207,8 @@ class tx_magentoconnect_pi1 extends tslib_pibase {
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/magentoconnect/pi1/class.tx_magentoconnect_pi1.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/magentoconnect/pi1/class.tx_magentoconnect_pi1.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/magento/feplugins/magentoproducts/class.tx_magentoproducts.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/magento/feplugins/magentoproducts/class.tx_magentoproducts.php']);
 }
 
 ?>
