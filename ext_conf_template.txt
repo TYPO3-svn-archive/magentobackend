@@ -1,0 +1,3 @@
+# cat=basic; type=text; label=Url to your Shop: Enter the url of yor shop (FE)
+url = http://www.example.org/admin
+

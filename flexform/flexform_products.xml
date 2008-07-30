@@ -1,0 +1,122 @@
+<T3DataStructure>
+  <meta>
+	<langDisable>1</langDisable>
+  </meta>
+	<sheets>
+		<sDEF>
+			<ROOT>
+				<TCEforms>
+				<sheetTitle>LLL:EXT:magento/lang/products.xml:flexform.sheets.general.title</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+
+					<mode>
+						<TCEforms>
+							<label>LLL:EXT:magento/lang/products.xml:flexform.sheets.general.mode</label>
+							<config>
+								<type>select</type>
+								<items type="array">
+									<numIndex index="0" type="array">
+										<numIndex index="0">LLL:EXT:magento/lang/products.xml:flexform.sheets.general.mode.0</numIndex>
+										<numIndex index="1">SINGLEPRODUCT</numIndex>
+									</numIndex>
+									<numIndex index="1" type="array">
+										<numIndex index="0">LLL:EXT:magento/lang/products.xml:flexform.sheets.general.mode.1</numIndex>
+										<numIndex index="1">PRODUCTS</numIndex>
+									</numIndex>
+									<numIndex index="2" type="array">
+										<numIndex index="0">LLL:EXT:magento/lang/products.xml:flexform.sheets.general.mode.2</numIndex>
+										<numIndex index="1">PRODUCTIMAGE</numIndex>
+									</numIndex>
+
+								</items>
+			<!-- 					<itemsProcFunc>tx_ttnews_itemsProcFunc->user_insertExtraCodes</itemsProcFunc> -->
+								<maxitems>1</maxitems>
+								<size>1</size>
+			
+							</config>
+						</TCEforms>
+					</mode>
+
+					<sku>
+						<TCEforms>
+							<label>LLL:EXT:magento/lang/products.xml:flexform.sheets.general.sku</label>
+							<displayCond>FIELD:mode:!IN:PRODUCTS</displayCond>
+							<config>
+								<type>input</type>
+								<size>5</size>
+							</config>
+						</TCEforms>
+					</sku>
+					
+					<where>
+						<TCEforms>
+							<label>LLL:EXT:magento/lang/products.xml:flexform.sheets.general.where</label>
+							<displayCond>FIELD:mode:IN:PRODUCTS</displayCond>
+							<config>
+								<type>input</type>
+								<size>10</size>
+							</config>
+						</TCEforms>
+					</where>			
+					
+					<whereField>
+						<TCEforms>
+							<label>LLL:EXT:magento/lang/products.xml:flexform.sheets.general.whereField</label>
+							<displayCond>FIELD:mode:IN:PRODUCTS</displayCond>
+							<config>
+								<type>select</type>
+								<items type="array">
+									<numIndex index="0" type="array">
+										<numIndex index="0">sku</numIndex>
+										<numIndex index="1">sku</numIndex>
+									</numIndex>
+									<numIndex index="1" type="array">
+										<numIndex index="0">name</numIndex>
+										<numIndex index="1">name</numIndex>
+									</numIndex>
+									<numIndex index="2" type="array">
+										<numIndex index="0">description</numIndex>
+										<numIndex index="1">description</numIndex>
+									</numIndex>
+								</items>
+			<!-- 					<itemsProcFunc>tx_ttnews_itemsProcFunc->user_insertExtraCodes</itemsProcFunc> -->
+								<maxitems>1</maxitems>
+								<size>1</size>
+			
+							</config>
+						</TCEforms>
+					</whereField>
+		</el>
+	  </ROOT>
+	</sDEF>
+
+		<sMore>
+			<ROOT>
+				<TCEforms>
+				<sheetTitle>LLL:EXT:magento/lang/products.xml:flexform.sheets.more.title</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+
+					<template>
+						<TCEforms>
+							<label>LLL:EXT:magento/lang/products.xml:flexform.sheets.more.template</label>
+							<config>
+								<type>group</type>
+								<internal_type>file</internal_type>
+								<allowed>tmpl,html,htm</allowed>
+								<max_size>100</max_size>
+								<uploadfolder>uploads/tx_magentoconnect</uploadfolder>
+								<maxitems>1</maxitems>
+								<size>1</size>
+							</config>
+						</TCEforms>
+					</template>
+
+		</el>
+	  </ROOT>
+	</sMore>
+  </sheets>
+</T3DataStructure>
