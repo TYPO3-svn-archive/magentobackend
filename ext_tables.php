@@ -22,7 +22,7 @@ $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY . $prod]='l
 t3lib_extMgm::addPlugin(array('LLL:EXT:magento/lang/backend.xml:tt_content.list_type_pi1', $_EXTKEY . $prod),'list_type');
 
 // typoscript templates
-t3lib_extMgm::addStaticFile($_EXTKEY, 'static/magento_products/', 'Magento Products');
+t3lib_extMgm::addStaticFile($_EXTKEY, 'static/magentoproducts/', 'Magento Products');
 
 // Flexforms
 $TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY . $prod] = 'pi_flexform';
