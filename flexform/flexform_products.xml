@@ -45,7 +45,8 @@
 							<displayCond>FIELD:mode:!IN:PRODUCTS</displayCond>
 							<config>
 								<type>input</type>
-								<size>5</size>
+								<size>10</size>
+								<eval>trim</eval>
 							</config>
 						</TCEforms>
 					</sku>
