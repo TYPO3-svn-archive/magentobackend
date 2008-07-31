@@ -5,7 +5,7 @@
 #  * 
 #  ***************************/  
 
-plugin.tx_magentoconnect_pi1 {
+plugin.tx_magentoproducts {
 	templateFile = EXT:magento/res/template.html
 	productWithImages = 1
 	
