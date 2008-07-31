@@ -131,6 +131,22 @@ class tx_magento_api {
 	}
 
 	/**
+	 * Get the link to a product
+	 *
+	 * @param	string		$sku: sku of the product
+	 * @return	link
+	 */
+	public function getProductLink($sku) {
+		$product = $this->getSingleProduct($sku, false);
+		
+		$link = $product['url_key'].'.html';
+		
+		return $link;
+	}
+
+	
+
+	/**
 	 * Get the product info
 	 *
 	 * @param	string		$id: id of the category

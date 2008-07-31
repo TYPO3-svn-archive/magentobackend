@@ -49,24 +49,24 @@ class tx_magentoproducts extends tslib_pibase {
 		$this->init($conf);
 
 
-
 		if($this->checkConfiguration()) {
 
 
 
-			$this->magento->open();
 
 			
 			// load the correct mode
 			switch ($this->config['mode']) {
 				case 'SINGLEPRODUCT':	
-					$result = $this->magento->getSingleProduct($this->config['sku'], $this->conf['productWithImages']);
+					$result = $this->api->getSingleProduct($this->config['sku'], $this->conf['productWithImages']);
+					$result = $this->fillTemplateSingleProduct($result);
 				break;
 				case 'PRODUCTS':	
-					$result = $this->magento->getProducts($this->config['where'], $this->config['whereField']);
+					$result = $this->api->getProducts($this->config['where'], $this->config['whereField']);
+					$result = $this->fillTemplateProducts($result);
 				break;
 				case 'PRODUCTIMAGE':	
-					$result = $this->magento->getProductImage($this->config['sku']);
+					#$result = $this->api->getProductImage($this->config['sku']);
 				break;
 			}
 			
@@ -76,7 +76,7 @@ class tx_magentoproducts extends tslib_pibase {
 				$content.= $result;
 			}
 			
-			$this->magento->close();		
+
 			
 		} else {
 			$content .= 'No configuration!!';
@@ -85,24 +85,70 @@ class tx_magentoproducts extends tslib_pibase {
 		return $this->pi_wrapInBaseClass($content);
 	}
 	
-	
-	function fillTemplate($row) {
+	function fillTemplateProducts($productList) {
 		$template['total'] = $this->cObj->getSubpart($this->templateCode,'###TEMPLATE_'.$this->config['mode'].'###');		
-		
-		foreach ($row as $key=>$value) {
-			$markerArray['###'.strtoupper($key).'###'] = $this->cObj->stdWrap($value, $this->conf[strtolower($his->config['mode']).'.'][$key]);
+		$template['item'] = $this->cObj->getSubpart($template['total'],'###ITEM###');
+
+		foreach ($productList as $key=>$singleProduct) {
+			$generalMarkers = $this->getGeneralMarkers($singleProduct);
+			$markerArray = $generalMarkers['markerArray'];
+			$wrappedSubpartArray = $generalMarkers['wrappedSubpartArray'];
+
+			
+			$content_item .= $this->cObj->substituteMarkerArrayCached($template['item'], $markerArray, $subpartArray, $wrappedSubpartArray);
 		}
 	
+		// put everything into the template
+		$subpartArray['###CONTENT###'] = $content_item;
+		
+		$content.= $this->cObj->substituteMarkerArrayCached($template['total'], $markerArray, $subpartArray);
+		return $content;
+	}
+
+	
+	function fillTemplateSingleProduct($row) {
+		$template['total'] = $this->cObj->getSubpart($this->templateCode,'###TEMPLATE_'.$this->config['mode'].'###');		
+		
+		$generalMarkers = $this->getGeneralMarkers($row);
+		$markerArray = $generalMarkers['markerArray'];
+		$wrappedSubpartArray = $generalMarkers['wrappedSubpartArray'];
+		
 		if (is_array($row['categories'])) {
 				$markerArray['###CATEGORIES###'] = $this->getCategories($row['categories']);
 		}
+		
+		if ($this->conf['listView'] && $this->vars['sku']) {
+			$markerArray['###BACK###'] = $this->cObj->typolink('Back', array('parameter' => $this->conf['listView']));
+		}
 	
-
-	
-		$content.= $this->cObj->substituteMarkerArrayCached($template['total'], $markerArray, $subpartArray);
-  #	$content.= t3lib_div::view_array($row);
+		$content.= $this->cObj->substituteMarkerArrayCached($template['total'], $markerArray, $subpartArray, $wrappedSubpartArray);
 		return $content;
+	}
+	
+	function getGeneralMarkers($row) {
+		foreach ($row as $key=>$value) {
+			$markerArray['###'.strtoupper($key).'###'] = $this->cObj->stdWrap($value, $this->conf[strtolower($his->config['mode']).'.'][$key]);
+		}
+		
+		if (isset($row['sku'])) {
+			$link = $this->config['baseUrl'].$this->api->getProductLink($row['sku']);
+			$wrappedSubpartArray['###PRODUCT_LINK###'][0] = '<a href="'.$link.'">';
+			$wrappedSubpartArray['###PRODUCT_LINK###'][1] = '</a>';			
 
+			$detailLink = array();
+			$detailLink['parameter'] = $this->conf['singleView'];
+			$detailLink['useCacheHash'] = 1;
+			$detailLink['additionalParams'] = '&tx_magento[sku]='.$row['sku'];
+			$detailLink['returnLast'] = 'url';
+			$wrappedSubpartArray['###PRODUCT_DETAILS###'][0] = '<a href="'.$this->cObj->typolink('', $detailLink).'">';
+			$wrappedSubpartArray['###PRODUCT_DETAILS###'][1] = '</a>';			
+
+		}
+		
+		$all['markerArray'] = $markerArray;
+		$all['wrappedSubpartArray'] = $wrappedSubpartArray;
+		
+		return $all;
 	}
 	
 	function getCategories($cats) {
@@ -112,7 +158,7 @@ class tx_magentoproducts extends tslib_pibase {
 
 		foreach ($cats as $key=>$catId) {
 
-			$category = $this->magento->getCategory($catId);		
+			$category = $this->api->getCategory($catId);		
 					
 			foreach ($category as $key=>$value) {
 			$markerArray['###'.strtoupper($key).'###'] = $this->cObj->stdWrap($value, $this->conf['category.'][$key]);
@@ -137,7 +183,7 @@ class tx_magentoproducts extends tslib_pibase {
 	 */	
 	function checkConfiguration() {
 		$config = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['magento']);		
-		
+		$this->config['baseUrl'] = $config['url'];
 		if ($config['username']!='' && $config['password']!='' && $config['url']!='')	{
 			$config['url'] .= 'api/soap/?wsdl';
 			$this->api = new tx_magento_api($config['url'], $config['username'], $config['password']);	
@@ -158,11 +204,13 @@ class tx_magentoproducts extends tslib_pibase {
 		$this->pi_loadLL(); // Loading language-labels
 		$this->pi_setPiVarDefaults(); // Set default piVars from TS
 		$this->pi_initPIflexForm(); // Init FlexForm configuration for plugin
+		$this->vars = t3lib_div::_GP('tx_magento');
 		
 
 		// add the flexform values
 		$this->config['mode']		= $this->getFlexform('', 'mode', 'mode');
 		$this->config['sku'] 		= $this->getFlexform('', 'sku', 'sku');
+		$this->config['sku'] = $this->vars['sku'] ? $this->vars['sku'] : $this->config['sku'];
 		$this->config['where'] 		= $this->getFlexform('', 'where', 'where');
 		$this->config['whereField'] 		= $this->getFlexform('', 'whereField', 'whereField');		  	
 
