@@ -10,5 +10,5 @@ $MCONF['access']='admin';
 $MCONF['script']='index.php';
 
 $MLANG['default']['tabs_images']['tab'] = 'moduleicon.gif';
-$MLANG['default']['ll_ref']='LLL:EXT:magento/mod/magentosoap/locallang_mod.xml';
+$MLANG['default']['ll_ref'] = 'LLL:EXT:magento/mod/magentosoap/locallang_mod.xml';
 ?>

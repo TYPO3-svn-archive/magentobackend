@@ -138,7 +138,7 @@ class  tx_magentoconnect_module1 extends t3lib_SCbase {
 
 
 						// ShortCut
-						if ($$GLOBALS['BE_USER']->mayMakeShortcut())	{
+						if ($GLOBALS['BE_USER']->mayMakeShortcut())	{
 							$this->content.=$this->doc->spacer(20).$this->doc->section('',$this->doc->makeShortcutIcon('id',implode(',',array_keys($this->MOD_MENU)),$this->MCONF['name']));
 						}
 
@@ -195,7 +195,8 @@ class  tx_magentoconnect_module1 extends t3lib_SCbase {
 					
 					#$tree = new t3lib_arrayBrowser;
 					
-					$countries = $this->api->call('category.tree');
+					#$countries = $this->api->test;
+					$countries = $this->api->client->call($this->api->sessionId, 'category.tree');
 					$content .= $this->doc->section('Countries:', t3lib_div::view_array($countries), 0, 2);
 					$this->api->close();
 					
@@ -223,21 +224,7 @@ class  tx_magentoconnect_module1 extends t3lib_SCbase {
 			  }	
 			  
 			  
-			  /* MAGENTO functions */
-			  function connect() {
-					  // TODO: check url/username/password
-				  if(!$this->client) {
-					  $this->client = new SoapClient($this->connect['url'] . '/api/soap/?wsdl');
-					  $this->sessionId = $this->client->login($this->connect['username'], $this->connect['password']);
-				  }
-				  if(!$this->client) {
-						die('No connection possible, check your params:<br /><br />
-						Url: ' . $this->connect['url'] . '<br />
-						username: ' . $this->connect['username'] . '<br />
-						password: ' . $this->connect['password'] . '');
-				  }
-					
-			  }	
+			  
 			  
 			  
 			}
