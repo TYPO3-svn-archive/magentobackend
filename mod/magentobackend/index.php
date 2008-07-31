@@ -83,7 +83,7 @@ class  tx_magentobackend_module1 extends t3lib_SCbase {
 						$this->doc->backPath = $BACK_PATH;
 
 							// get the file from EM & user tsconfig
-						$tmp_confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['magentobackend']);
+						$tmp_confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['magento']);
 						$url = trim($tmp_confArr['url']);
 						if ($url!='') {
 							$this->content.= '

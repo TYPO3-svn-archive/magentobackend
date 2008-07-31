@@ -28,11 +28,9 @@
  * @author	Steffen Kamper, Georg Ringer <>
  */
 class tx_magento_api {
-	protected $url;
-	protected $user;
-	protected $password;
-	protected $client = NULL;
-	protected $sessionId;
+	
+	public $client = NULL;
+	public $sessionId;
 	
 	 /**
 	 * class constructor
@@ -44,18 +42,18 @@ class tx_magento_api {
 	 */	
 	public function __construct($url, $user, $password) {
 		$this->url = $url;
-		$this->user = $user;
-		$this->password = $password;
+		
 		//connect to magento
-		$this->client = new SoapClient($this->url);
-		$this->sessionId = $this->client->login($this->user, $this->password);
+		$this->client = new SoapClient($url);
+		$this->sessionId = $this->client->login($user, $password);
 
 		if(!$this->client) {
 			die('No connection possible, check your params:<br /><br />
 				Url: ' . $this->connect['url'] . '<br />
 				username: ' . $this->connect['username'] . '<br />
 				password: ' . $this->connect['password'] . '');
-			}
+		}
+		
 	}
 	
 	 /**
@@ -65,7 +63,8 @@ class tx_magento_api {
 	 * @param	boolean		$getImages: Load images at the same time
 	 * @return	product
 	 */	
-	private function call($command, $id) {
+	public function call($command, $id=0) {
+		#t3lib_div::debug($this->sessionId,'debug'); 
 		return $this->client->call($this->sessionId, $command, $id);
 	}
 	
