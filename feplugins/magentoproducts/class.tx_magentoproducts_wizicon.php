@@ -49,7 +49,7 @@ class tx_magentoproducts_wizicon {
 							'icon'=>t3lib_extMgm::extRelPath('magento').'feplugins/magentoproducts/ce_wiz.gif',
 							'title'=>$LANG->getLLL('pi1_title',$LL),
 							'description'=>$LANG->getLLL('pi1_plus_wiz_description',$LL),
-							'params'=>'&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=magento_products'
+							'params'=>'&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=magentoproducts'
 						);
 
 						return $wizardItems;
