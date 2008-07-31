@@ -65,6 +65,10 @@ class tx_magentoproducts extends tslib_pibase {
 					$result = $this->api->getProducts($this->config['where'], $this->config['whereField']);
 					$result = $this->fillTemplateProducts($result);
 				break;
+				case 'PRODUCTSEARCH':	
+					$result = $this->getProductSearch();
+				break;
+
 				case 'PRODUCTIMAGE':	
 					#$result = $this->api->getProductImage($this->config['sku']);
 				break;
@@ -85,8 +89,31 @@ class tx_magentoproducts extends tslib_pibase {
 		return $this->pi_wrapInBaseClass($content);
 	}
 	
-	function fillTemplateProducts($productList) {
-		$template['total'] = $this->cObj->getSubpart($this->templateCode,'###TEMPLATE_'.$this->config['mode'].'###');		
+	function getProductSearch() {
+		$template['total'] = $this->cObj->getSubpart($this->templateCode,'###TEMPLATE_'.$this->config['mode'].'###');
+
+		$markerArray['###ACTIONURL###'] = $this->pi_getPageLink($GLOBALS['TSFE']->id);
+		$markerArray['###SWORD###'] = $this->vars['sword'];
+		
+		if ($this->vars['sword']!='') {
+			// todo
+			$sword = '%'.$this->vars['sword'].'%';
+		
+			$result = $this->api->getProducts($sword, $this->config['whereField']); 		
+			$markerArray['###RESULT###'] = $this->fillTemplateProducts($result, true);	
+		} else {
+			$markerArray['###RESULT###'] = '';
+		}
+
+		$content.= $this->cObj->substituteMarkerArrayCached($template['total'], $markerArray, $subpartArray);
+		return $content;
+	
+	}
+	
+	function fillTemplateProducts($productList, $search=false) {
+		$templatePrefix = ($search) ? '_RESULT' : '';
+
+		$template['total'] = $this->cObj->getSubpart($this->templateCode,'###TEMPLATE_'.$this->config['mode'].$templatePrefix.'###');		
 		$template['item'] = $this->cObj->getSubpart($template['total'],'###ITEM###');
 
 		foreach ($productList as $key=>$singleProduct) {
@@ -119,6 +146,8 @@ class tx_magentoproducts extends tslib_pibase {
 		
 		if ($this->conf['listView'] && $this->vars['sku']) {
 			$markerArray['###BACK###'] = $this->cObj->typolink('Back', array('parameter' => $this->conf['listView']));
+		} else {
+			$markerArray['###BACK###'] = '';
 		}
 	
 		$content.= $this->cObj->substituteMarkerArrayCached($template['total'], $markerArray, $subpartArray, $wrappedSubpartArray);

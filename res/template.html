@@ -32,8 +32,43 @@
 		<!-- ###ITEM### -->
 	<!-- ###CONTENT### -->
 	</ul>
-
 <!-- ###TEMPLATE_PRODUCTS### -->
+
+
+
+<!-- ###TEMPLATE_PRODUCTSEARCH### -->
+
+<form action="###ACTIONURL###" method="post">
+	<label for="sword">Search Text</label><br />
+	<input type="text" id="sword" name="tx_magento[sword]" value="###SWORD###" />
+
+	
+	<input type="submit" / value="Search" />
+
+</form>
+
+###RESULT###
+<br />
+<!-- ###TEMPLATE_PRODUCTSEARCH### -->
+
+<!-- ###TEMPLATE_PRODUCTSEARCH_RESULT### -->
+<br /><h2>Search Result(s)</h2>
+	<ul>
+	<!-- ###CONTENT### -->
+		<!-- ###ITEM### -->
+			<li>
+				<div style="productlist-single">
+					<strong>###NAME###</strong><br />
+					SKU: ###SKU###<br />
+					<!-- ###PRODUCT_DETAILS### -->Details<!-- ###PRODUCT_DETAILS### --> &middot; <!-- ###PRODUCT_LINK### -->Order this product<!-- ###PRODUCT_LINK### -->
+				</div>
+			</li>
+		<!-- ###ITEM### -->
+	<!-- ###CONTENT### -->
+	</ul>
+<!-- ###TEMPLATE_PRODUCTSEARCH_RESULT### -->
+
+
 
 
 <!-- ###TEMPLATE_CATEGORIES### -->
@@ -48,3 +83,4 @@
 
 
 <!-- ###TEMPLATE_CATEGORIES### -->
+
