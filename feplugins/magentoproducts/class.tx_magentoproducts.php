@@ -23,7 +23,7 @@
 ***************************************************************/
 
 require_once(PATH_tslib.'class.tslib_pibase.php');
-
+require_once(t3lib_extMgm::extPath('magento').'api/class.tx_magento_api.php');
 
 /**
  * Plugin 'Magento Connect' for the 'magento' extension.
@@ -49,7 +49,7 @@ class tx_magentoproducts extends tslib_pibase {
 		$this->init($conf);
 
 
-		
+
 		if($this->checkConfiguration()) {
 
 
@@ -90,11 +90,11 @@ class tx_magentoproducts extends tslib_pibase {
 		$template['total'] = $this->cObj->getSubpart($this->templateCode,'###TEMPLATE_'.$this->config['mode'].'###');		
 		
 		foreach ($row as $key=>$value) {
-		$markerArray['###'.strtoupper($key).'###'] = $this->cObj->stdWrap($value, $this->conf[strtolower($his->config['mode']).'.'][$key]);
-	}
+			$markerArray['###'.strtoupper($key).'###'] = $this->cObj->stdWrap($value, $this->conf[strtolower($his->config['mode']).'.'][$key]);
+		}
 	
-	if (is_array($row['categories'])) {
-			$markerArray['###CATEGORIES###'] = $this->getCategories($row['categories']);
+		if (is_array($row['categories'])) {
+				$markerArray['###CATEGORIES###'] = $this->getCategories($row['categories']);
 		}
 	
 
@@ -139,8 +139,8 @@ class tx_magentoproducts extends tslib_pibase {
 		$config = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['magento']);		
 		
 		if ($config['username']!='' && $config['password']!='' && $config['url']!='')	{
-			$this->magento->getConnection($config['url'], $config['username'], $config['password']);	
-			
+			$config['url'] .= 'api/soap/?wsdl';
+			$this->api = new tx_magento_api($config['url'], $config['username'], $config['password']);	
 			return	true;
 		} else {
 			return false;
@@ -172,8 +172,7 @@ class tx_magentoproducts extends tslib_pibase {
 			// CSS file
 		$GLOBALS['TSFE']->additionalHeaderData['magento'] = (isset($this->conf['pathToCSS'])) ? '<link rel="stylesheet" href="'.$GLOBALS['TSFE']->tmpl->getFileName($this->conf['pathToCSS']).'" type="text/css" />' : '';
 		
-		require_once( t3lib_extMgm::extPath('magento').'/class.tx_magento_api.php');
-		$this->magento = t3lib_div::makeInstance('tx_magento_api');
+
 
 	}	
 	
