@@ -29,7 +29,7 @@ require_once('conf.php');
 require_once($BACK_PATH.'init.php');
 require_once($BACK_PATH.'template.php');
 
-$LANG->includeLLFile('EXT:magentobackend/mod1/locallang.xml');
+$LANG->includeLLFile('EXT:magento/mod/magentobackend/locallang.xml');
 require_once(PATH_t3lib.'class.t3lib_scbase.php');
 $BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users has no permission for entry.
 	// DEFAULT initialization of a module [END]
@@ -43,7 +43,7 @@ $BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users
  * @package	TYPO3
  * @subpackage	tx_magentobackend
  */
-class  tx_magentobackend_module1 extends t3lib_SCbase {
+class  tx_magentobackend extends t3lib_SCbase {
 				var $pageinfo;
 
 				/**
@@ -126,7 +126,7 @@ if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/magento
 
 
 // Make instance:
-$SOBE = t3lib_div::makeInstance('tx_magentobackend_module1');
+$SOBE = t3lib_div::makeInstance('tx_magentobackend');
 $SOBE->init();
 
 // Include files?

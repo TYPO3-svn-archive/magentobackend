@@ -53,19 +53,22 @@ class tx_magento_api {
 				username: ' . $this->connect['username'] . '<br />
 				password: ' . $this->connect['password'] . '');
 		}
-		
 	}
 	
 	 /**
-	 * Get a single product by its SKU
+	 * makes a direct api-call
 	 *
-	 * @param	string		$sku: sku of the product
-	 * @param	boolean		$getImages: Load images at the same time
+	 * @param	string		$command: api-command
+	 * @param	int			$id: normally the sku
 	 * @return	product
 	 */	
-	public function call($command, $id=0) {
-		#t3lib_div::debug($this->sessionId,'debug'); 
-		return $this->client->call($this->sessionId, $command, $id);
+	public function call($command, $id=false) {
+		if ($id) {
+			return $this->client->call($this->sessionId, $command, $id);
+		} else {
+			return $this->client->call($this->sessionId, $command);
+		}
+		
 	}
 	
 	

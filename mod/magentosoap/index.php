@@ -29,7 +29,7 @@ require_once('conf.php');
 require_once($BACK_PATH.'init.php');
 require_once($BACK_PATH.'template.php');
 
-$GLOBALS['LANG']->includeLLFile('EXT:magentoconnect/mod1/locallang.xml');
+$GLOBALS['LANG']->includeLLFile('EXT:magento/mod/magentosoap/locallang.xml');
 require_once(PATH_t3lib.'class.t3lib_scbase.php');
 require_once(PATH_t3lib.'class.t3lib_arraybrowser.php');
 
@@ -47,7 +47,7 @@ $BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users
  * @package	TYPO3
  * @subpackage	tx_magentoconnect
  */
-class  tx_magentoconnect_module1 extends t3lib_SCbase {
+class  tx_magentosoap extends t3lib_SCbase {
 				var $pageinfo;
 				
 				var $conf;
@@ -176,7 +176,7 @@ class  tx_magentoconnect_module1 extends t3lib_SCbase {
 					switch((string)$this->MOD_SETTINGS['function'])	{
 						case 1:
 							$content= $this->getAllProducts();
-							$this->content.=$this->doc->section($this->ll('function1'),$content,0,1);
+							$this->content.=$this->doc->section($this->LL('function1'),$content,0,1);
 						break;
 						case 2:
 							$content='<div align=center><strong>Menu item #2...</strong></div>';
@@ -195,8 +195,7 @@ class  tx_magentoconnect_module1 extends t3lib_SCbase {
 					
 					#$tree = new t3lib_arrayBrowser;
 					
-					#$countries = $this->api->test;
-					$countries = $this->api->client->call($this->api->sessionId, 'category.tree');
+					$countries = $this->api->call('category.tree');
 					$content .= $this->doc->section('Countries:', t3lib_div::view_array($countries), 0, 2);
 					$this->api->close();
 					
@@ -209,9 +208,9 @@ class  tx_magentoconnect_module1 extends t3lib_SCbase {
 			 * @param	string		$val: the id of the localized item
 			 * @return	string		localized value
 			 */
-				function ll($val) {
+			 function LL($val) {
 				return $GLOBALS['LANG']->getLL($val);
-			  }
+			 }
 
 				/**
 			 * Make a string bold
@@ -239,7 +238,7 @@ if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/magento
 
 
 // Make instance:
-$SOBE = t3lib_div::makeInstance('tx_magentoconnect_module1');
+$SOBE = t3lib_div::makeInstance('tx_magentosoap');
 $SOBE->init();
 
 // Include files?
