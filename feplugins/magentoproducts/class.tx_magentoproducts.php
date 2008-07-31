@@ -135,20 +135,54 @@ class tx_magentoproducts extends tslib_pibase {
 	
 	function fillTemplateSingleProduct($row) {
 		$template['total'] = $this->cObj->getSubpart($this->templateCode,'###TEMPLATE_'.$this->config['mode'].'###');		
+		$template['imagelist'] = $this->cObj->getSubpart($template['total'],'###ITEM###');
 		
 		$generalMarkers = $this->getGeneralMarkers($row);
 		$markerArray = $generalMarkers['markerArray'];
 		$wrappedSubpartArray = $generalMarkers['wrappedSubpartArray'];
 		
+		// render the images
+		$imageCount = 0;
+		if (count($row['images'])> 0) {
+			$imageList = 	$row['images'];
+			
+			foreach ($row['images'] as $key=>$singleImage) {
+				if($singleImage['exclude']==0 && $singleImage['types'][0]=='image') {
+				 	$markerArray['###IMAGE###'] = $singleImage['url'];
+				 	$markerArray['###LABEL###'] = $singleImage['label'];
+				 	$imageCount++;
+				 	
+				 	$content_item .= $this->cObj->substituteMarkerArrayCached($template['imagelist'], $markerArray, $subpartArray, $wrappedSubpartArray);
+				}
+				
+			}
+			
+			if ($imageCount>0) {
+				$subpartArray['###IMAGELIST###'] = '<div class="imagelist">'.$content_item.'</div>';
+			} else {
+				$subpartArray['###IMAGELIST###'] = ' ';
+			}
+	
+
+			
+
+			
+		#	$subpartArray['###IMAGELIST###'] .= t3lib_div::view_array($imageList);
+			
+		}
+		
+		// render the categories
 		if (is_array($row['categories'])) {
 				$markerArray['###CATEGORIES###'] = $this->getCategories($row['categories']);
 		}
 		
+		// backlink
 		if ($this->conf['listView'] && $this->vars['sku']) {
 			$markerArray['###BACK###'] = $this->cObj->typolink('Back', array('parameter' => $this->conf['listView']));
 		} else {
 			$markerArray['###BACK###'] = '';
 		}
+		
 	
 		$content.= $this->cObj->substituteMarkerArrayCached($template['total'], $markerArray, $subpartArray, $wrappedSubpartArray);
 		return $content;
@@ -156,8 +190,9 @@ class tx_magentoproducts extends tslib_pibase {
 	
 	function getGeneralMarkers($row) {
 		foreach ($row as $key=>$value) {
-			$markerArray['###'.strtoupper($key).'###'] = $this->cObj->stdWrap($value, $this->conf[strtolower($his->config['mode']).'.'][$key]);
+			$markerArray['###'.strtoupper($key).'###'] = $this->cObj->stdWrap($value, $this->conf[strtolower($this->config['mode']).'.'][$key.'.']);
 		}
+
 		
 		if (isset($row['sku'])) {
 			$link = $this->config['baseUrl'].$this->api->getProductLink($row['sku']);
