@@ -46,13 +46,20 @@
 <!-- ###TEMPLATE_PRODUCTSEARCH### -->
 
 <form action="###ACTIONURL###" method="post">
-	<label for="sword">Search Text</label><br />
-	<input type="text" id="sword" name="tx_magento[sword]" value="###SWORD###" />
-
+	<label for="sword">Search Text</label>
+	<input type="text" id="sword" name="tx_magento[sword]" value="###SWORD###" /><br />
 	
+	<label for="field">Search in</label>
+	<select name="tx_magento[searchfield]" id="field">
+		<option value="">Where to search</option>
+		###SEARCHFIELDS###
+	</select>
+
+	<br />
 	<input type="submit" / value="Search" />
 
 </form>
+###ERROR###
 
 ###RESULT###
 

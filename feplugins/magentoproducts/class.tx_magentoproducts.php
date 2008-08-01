@@ -94,16 +94,39 @@ class tx_magentoproducts extends tslib_pibase {
 
 		$markerArray['###ACTIONURL###'] = $this->pi_getPageLink($GLOBALS['TSFE']->id);
 		$markerArray['###SWORD###'] = $this->vars['sword'];
+		$markerArray['###RESULT###'] = '';
+		$markerArray['###ERROR###'] = '';
+
+		// allowed fields to search in
+		$allowedSearchFields = t3lib_div::trimExplode(',', $this->conf['productsearch.']['allowedfields']);	
+		
+		// selected fields
+		foreach ($allowedSearchFields as $key=>$value) {
+			$selected = ($this->vars['searchfield']==$value) ? ' selected="selected" ' : '';
+  		$markerArray['###SEARCHFIELDS###'] .= '<option value="'.$value.'"'.$selected.'>'.$value.'</option>';
+  	}
 		
 		if ($this->vars['sword']!='') {
-			// todo
-			$sword = '%'.$this->vars['sword'].'%';
+			// check for minimal chars
+			if ($this->conf['productsearch.']['minimalChars'] > 0 && strlen($this->vars['sword']) < $this->conf['productsearch.']['minimalChars']) {
+				$markerArray['###ERROR###'] = 'Minimal chars for search: '.$this->conf['productsearch.']['minimalChars'];
+			}	else {
+				// todo
+				$sword = '%'.$this->vars['sword'].'%';
 		
-			$result = $this->api->getProducts($sword, $this->config['whereField']); 		
-			$markerArray['###RESULT###'] = $this->fillTemplateProducts($result, true);	
-		} else {
-			$markerArray['###RESULT###'] = '';
-		}
+				if ($this->vars['searchfield']!='' && in_array($this->vars['searchfield'], $allowedSearchFields) ) {
+					$sfield = $this->vars['searchfield'];
+				} else {
+					$sfield = $this->conf['productsearch.']['defaultSearchField'];
+				}
+	
+				$result = $this->api->getProducts($sword, $sfield); 		
+				$markerArray['###RESULT###'] = $this->fillTemplateProducts($result, true);	
+
+			}
+			
+		} 
+
 
 		$content.= $this->cObj->substituteMarkerArrayCached($template['total'], $markerArray, $subpartArray);
 		return $content;
@@ -167,7 +190,7 @@ class tx_magentoproducts extends tslib_pibase {
 			
 
 			
-		#	$subpartArray['###IMAGELIST###'] .= t3lib_div::view_array($imageList);
+	#		$subpartArray['###IMAGELIST###'] .= t3lib_div::view_array($row);
 			
 		}
 		
