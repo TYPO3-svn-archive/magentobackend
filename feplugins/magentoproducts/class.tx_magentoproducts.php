@@ -107,6 +107,7 @@ class tx_magentoproducts extends tslib_pibase {
   	}
 		
 		if ($this->vars['sword']!='') {
+			$this->vars['sword'] = trim($this->vars['sword']);
 			// check for minimal chars
 			if ($this->conf['productsearch.']['minimalChars'] > 0 && strlen($this->vars['sword']) < $this->conf['productsearch.']['minimalChars']) {
 				$markerArray['###ERROR###'] = 'Minimal chars for search: '.$this->conf['productsearch.']['minimalChars'];
