@@ -6,9 +6,12 @@ $prod = 'products';
 
 
 if (TYPO3_MODE == 'BE')	{
+	
+	
 	// add be-modules
-	t3lib_extMgm::addModule('user','txmagentobackendM1','',t3lib_extMgm::extPath($_EXTKEY).'mod/magentobackend/');
-	t3lib_extMgm::addModule('web','txmagentoconnectM1','',t3lib_extMgm::extPath($_EXTKEY).'mod/magentosoap/'); 
+	t3lib_extMgm::addModule('txmagentoM1','','',t3lib_extmgm::extPath($_EXTKEY).'mod/dummy/');
+	t3lib_extMgm::addModule('txmagentoM1','txmagentoconnectM1','',t3lib_extMgm::extPath($_EXTKEY).'mod/magento/'); 
+	t3lib_extMgm::addModule('txmagentoM1','txmagentobackendM1','',t3lib_extMgm::extPath($_EXTKEY).'mod/magentobackend/');
 	
 	// add new content wizard
 	$TBE_MODULES_EXT["xMOD_db_new_content_el"]["addElClasses"]["tx_magentoproducts_wizicon"] = t3lib_extMgm::extPath($_EXTKEY).'feplugins/magentoproducts/class.tx_magentoproducts_wizicon.php';
