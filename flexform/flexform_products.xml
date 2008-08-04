@@ -33,7 +33,10 @@
 										<numIndex index="0">LLL:EXT:magento/lang/products.xml:flexform.sheets.general.mode.3</numIndex>
 										<numIndex index="1">PRODUCTSEARCH</numIndex>
 									</numIndex>
-
+									<numIndex index="4" type="array">
+										<numIndex index="0">LLL:EXT:magento/lang/products.xml:flexform.sheets.general.mode.4</numIndex>
+										<numIndex index="1">CATEGORYTREE</numIndex>
+									</numIndex>
 								</items>
 			<!-- 					<itemsProcFunc>tx_ttnews_itemsProcFunc->user_insertExtraCodes</itemsProcFunc> -->
 								<maxitems>1</maxitems>

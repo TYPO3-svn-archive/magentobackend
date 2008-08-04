@@ -86,15 +86,16 @@
 
 
 <!-- ###TEMPLATE_CATEGORIES### -->
-	Categories: 
-	
-	<!-- ###CONTENT### -->
-		<!-- ###ITEM### -->
-		###NAME### <small>(path: ###URL_PATH###)</small>
-		
-		<!-- ###ITEM### -->
-	<!-- ###CONTENT### -->
-
-
+	Categories: ###CATEGORYTREE###
 <!-- ###TEMPLATE_CATEGORIES### -->
 
+
+<!-- ###TEMPLATE_CATEGORYTREE### -->
+	<ul class="magento-categorytree">
+		###CATEOGRYTREE###
+	</ul>
+<!-- ###TEMPLATE_CATEGORYTREE### -->
+
+<!-- ###TEMPLATE_CATEGORYTREE_ELEMENT### -->
+	<li class="magento-categorytree-level-###LEVEL###">###NAME### <small>(Level: ###LEVEL###)</small> <!-- ###LINK_ITEM### -->Link<!-- ###LINK_ITEM### --> ###CHILD###</li>
+<!-- ###TEMPLATE_CATEGORYTREE_ELEMENT### -->

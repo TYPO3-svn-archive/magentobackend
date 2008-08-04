@@ -62,17 +62,24 @@ class tx_magentoproducts extends tslib_pibase {
 					$result = $this->fillTemplateSingleProduct($result);
 				break;
 				case 'PRODUCTS':	
-					$result = $this->api->getProducts($this->config['where'], $this->config['whereField']);
+					$result = $this->api->getProducts2($this->config['where'], $this->config['whereField']);
 					$result = $this->fillTemplateProducts($result);
 				break;
 				case 'PRODUCTSEARCH':	
 					$result = $this->getProductSearch();
 				break;
+				case 'CATEGORYTREE':	
+					$result = $this->fillTemplateCategoryTree();
+				break;
 
 				case 'PRODUCTIMAGE':	
 					#$result = $this->api->getProductImage($this->config['sku']);
 				break;
+				
+				default:
+					$result = 'Nothing chosen';
 			}
+			
 			
 			if (is_array($result)) {
 				$content.= $this->fillTemplate($result);
@@ -89,6 +96,61 @@ class tx_magentoproducts extends tslib_pibase {
 		return $this->pi_wrapInBaseClass($content);
 	}
 	
+
+
+	
+	function fillTemplateCategoryTree() {
+		$catTree = $this->api->catalogCategoryTree();
+
+		$template['total'] = $this->cObj->getSubpart($this->templateCode,'###TEMPLATE_'.$this->config['mode'].'###');
+						
+		$tree = '';
+		if (count($catTree) > 0) {
+			foreach ($catTree as $key=>$treeEl) {
+				$tree.= $this->fillTemplateCategoryTreeItem($treeEl);
+			}
+		}
+	
+		$markerArray['###CATEOGRYTREE###'] = $tree;
+
+		$content.= $this->cObj->substituteMarkerArrayCached($template['total'], $markerArray, $subpartArray);
+		return $content;
+	}
+	
+	function fillTemplateCategoryTreeItem($el) {
+		$template['total'] = $this->cObj->getSubpart($this->templateCode,'###TEMPLATE_'.$this->config['mode'].'_ELEMENT###');
+		if ($el['is_active']==1) {
+			$markerArray['###NAME###'] = $el['name'];
+			$markerArray['###LEVEL###'] = $el['level'];
+
+			if (is_array($el['children'])) {
+				foreach ($el['children'] as $key=>$value) {
+  				$child.= $this->fillTemplateCategoryTreeItem($value);
+  			}	
+				
+				$markerArray['###CHILD###'] = $this->cObj->stdWrap($child, $this->conf['categoryTree.']['child.']);
+			} else {
+				$markerArray['###CHILD###'] = '';
+			}
+
+			$detailLink = array();
+			$detailLink['parameter'] = intval($this->conf['categoryListView']) ? $this->conf['categoryListView'] : $GLOBALS['TSFE']->id;
+			$detailLink['useCacheHash'] = 1;
+			$detailLink['additionalParams'] = '&tx_magento[category]='.$el['category_id'];
+			$detailLink['returnLast'] = 'url';
+
+			$wrappedSubpartArray['###LINK_ITEM###'][0] = '<a href="'.$this->cObj->typolink('', $detailLink).'">';
+			$wrappedSubpartArray['###LINK_ITEM###'][1] = '</a>';			
+			
+			return $content.= $this->cObj->substituteMarkerArrayCached($template['total'], $markerArray, array(), $wrappedSubpartArray);
+
+		}		
+		return '';	
+	}	
+	
+	
+	
+		
 	function getProductSearch() {
 		$template['total'] = $this->cObj->getSubpart($this->templateCode,'###TEMPLATE_'.$this->config['mode'].'###');
 
@@ -103,8 +165,8 @@ class tx_magentoproducts extends tslib_pibase {
 		// selected fields
 		foreach ($allowedSearchFields as $key=>$value) {
 			$selected = ($this->vars['searchfield']==$value) ? ' selected="selected" ' : '';
-  		$markerArray['###SEARCHFIELDS###'] .= '<option value="'.$value.'"'.$selected.'>'.$value.'</option>';
-  	}
+		$markerArray['###SEARCHFIELDS###'] .= '<option value="'.$value.'"'.$selected.'>'.$value.'</option>';
+	}
 		
 		if ($this->vars['sword']!='') {
 			$this->vars['sword'] = trim($this->vars['sword']);
@@ -135,11 +197,19 @@ class tx_magentoproducts extends tslib_pibase {
 	}
 	
 	function fillTemplateProducts($productList, $search=false) {
+		if ($this->conf['startEmpty']==1 && !isset($this->vars['category'])) {
+			return '';
+		}
+		
+		$filters = array(
+			'category_ids' => array('like'=> intval($this->vars['category']))
+		);					
+		$productList = $this->api->getProducts2($filters);
+		
 		$templatePrefix = ($search) ? '_RESULT' : '';
 
 		$template['total'] = $this->cObj->getSubpart($this->templateCode,'###TEMPLATE_'.$this->config['mode'].$templatePrefix.'###');		
 		$template['item'] = $this->cObj->getSubpart($template['total'],'###ITEM###');
-
 		foreach ($productList as $key=>$singleProduct) {
 			$generalMarkers = $this->getGeneralMarkers($singleProduct);
 			$markerArray = $generalMarkers['markerArray'];
@@ -172,11 +242,11 @@ class tx_magentoproducts extends tslib_pibase {
 			
 			foreach ($row['images'] as $key=>$singleImage) {
 				if($singleImage['exclude']==0 && $singleImage['types'][0]=='image') {
-				 	$markerArray['###IMAGE###'] = $singleImage['url'];
-				 	$markerArray['###LABEL###'] = $singleImage['label'];
-				 	$imageCount++;
-				 	
-				 	$content_item .= $this->cObj->substituteMarkerArrayCached($template['imagelist'], $markerArray, $subpartArray, $wrappedSubpartArray);
+					$markerArray['###IMAGE###'] = $singleImage['url'];
+					$markerArray['###LABEL###'] = $singleImage['label'];
+					$imageCount++;
+					
+					$content_item .= $this->cObj->substituteMarkerArrayCached($template['imagelist'], $markerArray, $subpartArray, $wrappedSubpartArray);
 				}
 				
 			}
@@ -246,7 +316,7 @@ class tx_magentoproducts extends tslib_pibase {
 
 		foreach ($cats as $key=>$catId) {
 
-			$category = $this->api->getCategory($catId);		
+			$category = $this->api->catalogCategoryInfo($catId);		
 					
 			foreach ($category as $key=>$value) {
 			$markerArray['###'.strtoupper($key).'###'] = $this->cObj->stdWrap($value, $this->conf['category.'][$key]);
@@ -274,6 +344,7 @@ class tx_magentoproducts extends tslib_pibase {
 		$this->config['baseUrl'] = $config['url'];
 		if ($config['username']!='' && $config['password']!='' && $config['url']!='')	{
 			$config['url'] .= 'api/soap/?wsdl';
+			#t3lib_div::debug($config,'debug'); 
 			$this->api = new tx_magento_api($config['url'], $config['username'], $config['password']);	
 			return	true;
 		} else {
@@ -303,7 +374,7 @@ class tx_magentoproducts extends tslib_pibase {
 		$this->config['whereField'] 		= $this->getFlexform('', 'whereField', 'whereField');		  	
 
 			// Template
-		$this->templateCode = $this->cObj->fileResource($conf['templateFile']);
+		$this->templateCode = $this->cObj->fileResource($conf['templateFile']);    
 
 			// CSS file
 		$GLOBALS['TSFE']->additionalHeaderData['magento'] = (isset($this->conf['pathToCSS'])) ? '<link rel="stylesheet" href="'.$GLOBALS['TSFE']->tmpl->getFileName($this->conf['pathToCSS']).'" type="text/css" />' : '';

@@ -121,6 +121,20 @@ class tx_magento_api {
 	}
 
 	/**
+	 * Get a product list
+	 *
+	 * @param	array		$filters: filter array
+	 * @return	Array productlist
+	 */	
+
+	public function getProducts2($filters) {
+	
+
+					
+			return $this->call('product.list', array($filters));				
+	}
+
+	/**
 	 * Get a single product by its SKU
 	 *
 	 * @param	string		$sku: sku of the product
@@ -147,14 +161,30 @@ class tx_magento_api {
 	
 
 	/**
-	 * Get the product info
+	 * Get a category info
 	 *
 	 * @param	string		$id: id of the category
-	 * @return	product
+	 * @return	category info
 	 */
-	public function getCategory($id) {
+	public function catalogCategoryInfo($id) {
 		return $this->call('catalog_category.info', intval($id));
 	}	
+	
+	/**
+	 * Get all categories
+	 *
+	 * @return	categorie list
+	 */
+	public function catalogCategoryTree($fullList=false) {
+		$list = $this->call('catalog_category.tree');
+		if ($fullList) {
+			return $list;
+		} else {
+			return $list['children'][0]['children'];
+		}
+
+	}	
+
 		
 	
 	/**
