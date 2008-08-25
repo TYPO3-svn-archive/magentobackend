@@ -62,7 +62,12 @@ class tx_magentoproducts extends tslib_pibase {
 					$result = $this->fillTemplateSingleProduct($result);
 				break;
 				case 'PRODUCTS':	
-					$result = $this->api->getProducts2($this->config['where'], $this->config['whereField']);
+					$filters = array(
+						$this->config['whereField'] => array(
+							'like'=> $this->config['where']
+						)
+					); 
+					$result = $this->api->getProducts2($filters);
 					$result = $this->fillTemplateProducts($result);
 				break;
 				case 'PRODUCTSEARCH':	
@@ -184,6 +189,7 @@ class tx_magentoproducts extends tslib_pibase {
 				}
 	
 				$result = $this->api->getProducts($sword, $sfield); 		
+
 				$markerArray['###RESULT###'] = $this->fillTemplateProducts($result, true);	
 
 			}
@@ -197,14 +203,19 @@ class tx_magentoproducts extends tslib_pibase {
 	}
 	
 	function fillTemplateProducts($productList, $search=false) {
-		if ($this->conf['startEmpty']==1 && !isset($this->vars['category'])) {
+
+		if ($this->conf['startEmpty']==1 && (!isset($this->vars['category']) && !$search)) {
 			return '';
 		}
-		
-		$filters = array(
-			'category_ids' => array('like'=> intval($this->vars['category']))
-		);					
-		$productList = $this->api->getProducts2($filters);
+
+
+		if (intval($this->vars['category']) > 0) {
+			$filters = array(
+				'category_ids' => array('like'=> intval($this->vars['category']))
+			);					
+			$productList = $this->api->getProducts2($filters);
+		}
+
 		
 		$templatePrefix = ($search) ? '_RESULT' : '';
 
